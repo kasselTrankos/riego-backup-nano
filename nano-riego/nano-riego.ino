@@ -20,33 +20,36 @@ void setup()
       while (1);
    }
    // Si se ha perdido la corriente, fijar fecha y hora
-   if (rtc.lostPower()) {
+   /*if (rtc.lostPower()) {
       // Fijar a fecha y hora de compilacion
       rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
       
       // Fijar a fecha y hora específica. En el ejemplo, 21 de Enero de 2016 a las 03:00:00
       // rtc.adjust(DateTime(2016, 1, 21, 3, 0, 0));
-   }
+   }*/
+   rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
    lcd.begin();                      
    lcd.backlight();
    
  }
 void irrigate(DateTime date) {
-  if(date.hour() >= 9 && date.hour()<15) {
+  
+  if(date.hour() == 9 && date.minute() == 6 && date.second() >=0 && date.second()<= 55) {
     next= " ->15:12";
-  }else{
-    next = " ->09:00";
-  }
-  if(date.hour() == 9 && date.minute() == 0 && date.second() >=0 && date.second()<= 65) {
-    
-   irrigation = " 40s";
+    irrigation = " 40s";
     digitalWrite(A0, HIGH);
-  } else if(date.hour() == 15 && date.minute() == 12 && date.second() >=0 && date.second()<=35) {
-    irrigation = " 10s";
+  } else if(date.hour() == 15 && date.minute() == 12 && date.second() >=0 && date.second()<=40) {
+    next= " ->21:00";
+    irrigation = " 55s";
+    Serial.println("ON");
+    digitalWrite(A0, HIGH);
+  } else if(date.hour() == 21 && date.minute() == 0 && date.second() >=0 && date.second()<=55) {
+    next= " ->09:06";
+    irrigation = " 55s";
     Serial.println("ON");
     digitalWrite(A0, HIGH);
   } else {
-    ///irrigation = "";
+    irrigation = "";
     digitalWrite(A0, LOW);
   }
 }
@@ -60,9 +63,9 @@ void printDate(DateTime date)
    
    lcd.print(dd);
    String hh = String(date.hour(), DEC) + ":"+ String(date.minute(), DEC) + ":"+ String(date.second(), DEC) + next;
+   
    lcd.setCursor(0, 1);
    lcd.print(hh);
-   //lcd.clear();
 }
 
 void loop() {
